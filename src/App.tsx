@@ -1,11 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
-import { Arrow, Index, Indexes, SudokuField } from "./types";
-import Cell from "./components/Cell/Cell";
-import {
-  resolvingSudoku,
-  getPlayableBoard,
-  calculateSquareIdx,
-} from "./utils/createSudoku";
+import { Arrow, Indexes, SudokuField, Value } from "./types";
+import { Articles, Cell, Controlers, Stats } from "./components";
+
+import { resolvingSudoku, getPlayableBoard } from "./utils/createSudoku";
 import {
   ARROWS,
   NUMBERS,
@@ -14,6 +11,8 @@ import {
   isValidField,
   getNewSpot,
   isCorrectCoords,
+  removeValue,
+  getHint,
 } from "./utils/play";
 
 const initialBoard = [
@@ -38,6 +37,32 @@ const App = () => {
   const initialSudoku = getPlayableBoard(initialBoard, resolvedSudoku);
   const [board, setBoard] = useState<SudokuField[][]>(initialSudoku);
   const [activeSpot, setActiveSpot] = useState<Indexes>(initialIndexes);
+  const [highlightedNum, setHighlightedNum] = useState<null | Value>(null);
+
+  const hint = useCallback(() => {
+    setBoard(prev => getHint(prev, activeSpot));
+    setHighlightedNum(board[activeSpot.x][activeSpot.y].correct);
+  }, [activeSpot, board]);
+
+  const erase = useCallback(() => {
+    setBoard(prev => removeValue(prev, activeSpot));
+    setHighlightedNum(null);
+  }, [activeSpot]);
+
+  const typeNumber = useCallback(
+    (value: Value) => {
+      setHighlightedNum(value);
+
+      setBoard(prev =>
+        prev.map((row, x) =>
+          row.map((cell, y) =>
+            isThisSpot(activeSpot, x, y) ? { ...cell, value } : cell
+          )
+        )
+      );
+    },
+    [activeSpot]
+  );
 
   const handleKeydown = useCallback(
     (e: KeyboardEvent) => {
@@ -49,7 +74,11 @@ const App = () => {
           return;
         }
 
-        setActiveSpot(prev => getNewSpot(prev, coords));
+        const newSpot = getNewSpot(activeSpot, coords);
+        const { value } = board[newSpot.x][newSpot.y];
+
+        setHighlightedNum(value ? value : null);
+        setActiveSpot(newSpot);
       } else if (NUMBERS.includes(key)) {
         if (!isValidField(board, activeSpot)) {
           return;
@@ -57,16 +86,14 @@ const App = () => {
 
         const value = parseInt(key, 10);
 
-        setBoard(prev =>
-          prev.map((row, x) =>
-            row.map((cell, y) =>
-              isThisSpot(activeSpot, x, y) ? { ...cell, value } : cell
-            )
-          )
-        );
+        typeNumber(value);
+      } else if (e.key === "Backspace") {
+        erase();
+      } else if (e.key === "h") {
+        hint();
       }
     },
-    [activeSpot, board]
+    [activeSpot, board, erase, hint, typeNumber]
   );
 
   useEffect(() => {
@@ -75,25 +102,35 @@ const App = () => {
     return () => document.removeEventListener("keydown", handleKeydown);
   }, [handleKeydown]);
 
-  const handleClick = (x: Index, y: Index) =>
-    setActiveSpot({ x, y, z: calculateSquareIdx(x, y) });
+  const handleClick = (cell: SudokuField) => {
+    setActiveSpot(cell.pos);
+    setHighlightedNum(cell.value ? cell.value : null);
+  };
 
   return (
-    <div>
-      <div className='board'>
-        {board.map((row, x) =>
-          row.map((cell, y) => (
-            <Cell
-              key={`${x}${y}`}
-              click={() => handleClick(x as Index, y as Index)}
-              cell={cell}
-              activeSpot={activeSpot}
-            >
-              {cell.value ? cell.value : ""}
-            </Cell>
-          ))
-        )}
+    <div className='content'>
+      <h2>Sudoku Game</h2>
+      <Stats />
+      <div className='game'>
+        <div className='board'>
+          {board.map((row, x) =>
+            row.map((cell, y) => (
+              <Cell
+                key={`${x}${y}`}
+                click={() => handleClick(cell)}
+                cell={cell}
+                activeSpot={activeSpot}
+                highlightedNum={highlightedNum}
+              >
+                {cell.value ? cell.value : ""}
+              </Cell>
+            ))
+          )}
+        </div>
+        <Controlers erase={erase} hint={hint} typeNumber={typeNumber} />
       </div>
+      <Articles />
+      <div className='footer'>footer here</div>
     </div>
   );
 };
