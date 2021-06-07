@@ -1,7 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { Arrow, Index, Indexes, SudokuField } from "./types";
 import Cell from "./components/Cell/Cell";
-import { resolvingSudoku, getPlayableBoard } from "./utils/createSudoku";
+import {
+  resolvingSudoku,
+  getPlayableBoard,
+  calculateSquareIdx,
+} from "./utils/createSudoku";
 import {
   ARROWS,
   NUMBERS,
@@ -26,7 +30,7 @@ const initialBoard = [
   [1, 9, 0, 0, 0, 5, 0, 0, 7],
 ];
 
-const initialIndexes = { x: 0, y: 0 } as Indexes;
+const initialIndexes: Indexes = { x: 0, y: 0, z: 0 };
 
 const resolvedSudoku = resolvingSudoku(initialBoard);
 
@@ -71,7 +75,8 @@ const App = () => {
     return () => document.removeEventListener("keydown", handleKeydown);
   }, [handleKeydown]);
 
-  const handleClick = (x: Index, y: Index) => setActiveSpot({ x, y });
+  const handleClick = (x: Index, y: Index) =>
+    setActiveSpot({ x, y, z: calculateSquareIdx(x, y) });
 
   return (
     <div>
@@ -83,8 +88,6 @@ const App = () => {
               click={() => handleClick(x as Index, y as Index)}
               cell={cell}
               activeSpot={activeSpot}
-              x={x}
-              y={y}
             >
               {cell.value ? cell.value : ""}
             </Cell>

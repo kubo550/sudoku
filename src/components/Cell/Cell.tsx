@@ -6,18 +6,20 @@ interface CellProps {
   click: () => void;
   cell: SudokuField;
   activeSpot: Indexes;
-  x: number;
-  y: number;
 }
 
-const Cell: FC<CellProps> = ({ cell, click, x, y, activeSpot }) => {
+const Cell: FC<CellProps> = ({ cell, click, activeSpot }) => {
   return (
     <S.Cell
       onClick={click}
-      borderTop={x % 3 === 0}
-      borderLeft={y % 3 === 0}
+      borderTop={cell.pos.x % 3 === 0}
+      borderLeft={cell.pos.y % 3 === 0}
       readonly={cell.readOnly}
-      isHover={activeSpot.x === x || activeSpot.y === y}
+      isHover={
+        activeSpot.x === cell.pos.x ||
+        activeSpot.y === cell.pos.y ||
+        activeSpot.z === cell.pos.z
+      }
       isCorrect={cell.value === cell.correct}
     >
       {cell.value ? cell.value : ""}

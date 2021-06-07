@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { SudokuField } from "../types";
+import { Index, Indexes, SudokuField } from "../types";
 
 const POSIBILITIES = Object.freeze([1, 2, 3, 4, 5, 6, 7, 8, 9]);
 const SAFE_NUMBER = 100;
@@ -7,11 +7,11 @@ const SAFE_NUMBER = 100;
 const hasEmptySpots = (board: number[][]) =>
     board.some(row => row.some(cell => cell === 0));
 
-export const calculateSquareIdx = (x: number, y: number): number => {
+export const calculateSquareIdx = (x: number, y: number): Index => {
     const heightIdx = Math.floor(x / 3) * 3;
     const widthIdx = Math.floor(y / 3);
 
-    return heightIdx + widthIdx;
+    return heightIdx + widthIdx as Index;
 };
 
 export const matrixArray = (board: number[][]): number[][] =>
@@ -94,8 +94,11 @@ export const getPlayableBoard = (
     const playableBoard = cloned.map((row, x) =>
         row.map((value, y) => ({
             value,
-            x,
-            y,
+            pos: {
+                x,
+                y,
+                z: calculateSquareIdx(x, y)
+            } as Indexes,
             readOnly: value !== 0,
             correct: value !== 0 ? value : resolvedBoard[x][y],
         }))

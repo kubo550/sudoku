@@ -1,5 +1,6 @@
 import _ from "lodash"
 import { Arrow, Coords, Indexes, SudokuField } from "../types";
+import { calculateSquareIdx } from "./createSudoku";
 
 export const ARROWS: Arrow[] = ["ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown"];
 export const NUMBERS = [...'123456789']
@@ -19,9 +20,11 @@ export const isValidField = (board: SudokuField[][], activeIndexes: Indexes): bo
     return !board[x][y].readOnly;
 };
 
+// todo refactor
 export const getNewSpot = (activeSpots: Indexes, coords: Coords) => ({
     x: activeSpots.x + coords.x,
     y: activeSpots.y + coords.y,
+    z: calculateSquareIdx(activeSpots.x + coords.x, activeSpots.y + coords.y)
 }) as Indexes
 
 export const isCorrectCoords = (activeSpots: Indexes, coords: Coords) => {
