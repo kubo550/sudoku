@@ -21,23 +21,34 @@ code {
     monospace;
 }
 
+.content {
+  margin: 0 20px;
+
+  @media (min-width: 720px) {
+    margin: 0 10%;
+    max-width: 1024px;
+  }
+}
+
+.game {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  // align-items: center;
+
+  @media (min-width: 720px) {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
 .board {
   display: flex;
   flex-wrap: wrap;
   width: 456px;
+  min-width: 456px;
   height: 456px;
   border: 3px inset #000;
-}
-
-.cell {
-  width: 50px;
-  height: 50px;
-  border: 1px inset black;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 1.9rem;
-  user-select: none;
 }
 
 .cell.hover {
