@@ -32,6 +32,25 @@ export const isCorrectCoords = (activeSpots: Indexes, coords: Coords) => {
     return _.inRange(newSpot.x, 0, 9) && _.inRange(newSpot.y, 0, 9)
 }
 
-
 export const isThisSpot = (spot: Indexes, x: number, y: number): boolean =>
     spot.x === x && spot.y === y;
+
+export const removeValue = (board: SudokuField[][], activeSpot: Indexes): SudokuField[][] => {
+    const newBoard = _.cloneDeep(board);
+    const { x, y } = activeSpot;
+    if (newBoard[x][y].readOnly) { return board }
+    newBoard[x][y].value = 0;
+    return newBoard
+}
+
+export const getHint = (board: SudokuField[][], activeSpot: Indexes): SudokuField[][] => {
+    const newBoard = _.cloneDeep(board);
+    const { x, y } = activeSpot;
+
+    if (newBoard[x][y].value !== 0) { return board }
+
+    newBoard[x][y].value = newBoard[x][y].correct;
+    newBoard[x][y].readOnly = true;
+
+    return newBoard
+}
