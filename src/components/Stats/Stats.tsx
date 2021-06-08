@@ -1,6 +1,20 @@
+import { useEffect } from "react";
+import { ARROWS } from "../../utils/play";
 import * as S from "./Stats.style";
 
 const Stats = () => {
+  const disableScroll = (e: KeyboardEvent) => {
+    if ([...ARROWS, "Space"].includes(e.key)) {
+      e.preventDefault();
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("keydown", disableScroll);
+
+    return () => window.removeEventListener("keydown", disableScroll);
+  }, []);
+
   return (
     <S.Wrapper>
       <div>
