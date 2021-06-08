@@ -1,8 +1,15 @@
-import { useEffect } from "react";
+import { FC, useEffect } from "react";
 import { ARROWS } from "../../utils/play";
 import * as S from "./Stats.style";
 
-const Stats = () => {
+interface StatsProps {
+  time: string;
+  isCounting: boolean;
+  startCount: () => void;
+  stopCount: () => void;
+}
+
+const Stats: FC<StatsProps> = ({ startCount, isCounting, stopCount, time }) => {
   const disableScroll = (e: KeyboardEvent) => {
     if ([...ARROWS, "Space"].includes(e.key)) {
       e.preventDefault();
@@ -27,11 +34,15 @@ const Stats = () => {
       </div>
 
       <div>
-        Auto-Ceck For Mistakes
+        Auto-Ceck<span id='auto-check'> For Mistakes </span>
         <input type='checkbox' />
       </div>
 
-      <div>00:00</div>
+      <div>
+        {time}
+        {isCounting && <button onClick={stopCount}> || </button>}
+        {!isCounting && <button onClick={startCount}> &gt; </button>}
+      </div>
     </S.Wrapper>
   );
 };

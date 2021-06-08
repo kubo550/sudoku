@@ -14,15 +14,15 @@ export const calculateSquareIdx = (x: number, y: number): Index => {
     return heightIdx + widthIdx as Index;
 };
 
-export const matrixArray = (board: number[][]): number[][] =>
+export const matrixArray = <T>(board: T[][]): T[][] =>
     board[0].map((_, colIdx) => board.map(row => row[colIdx]));
 
-export const squareBoard = (board: number[][]) => {
-    const newBoard: number[][] = [];
+export const squareBoard = <T>(board: T[][]): T[][] => {
+    const newBoard: T[][] = [];
 
     for (let c = 0; c < 3; c++) {
         for (let r = 0; r < 3; r++) {
-            const row: number[] = [];
+            const row: T[] = [];
 
             for (let x = 0; x < 3; x++) {
                 for (let y = 0; y < 3; y++) {
