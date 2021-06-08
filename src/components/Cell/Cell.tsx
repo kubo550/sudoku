@@ -1,5 +1,6 @@
 import { FC } from "react";
 import { Indexes, SudokuField } from "../../types";
+import { matrixArray, squareBoard } from "../../utils/createSudoku";
 import * as S from "./Cell.style";
 
 interface CellProps {
@@ -7,9 +8,16 @@ interface CellProps {
   cell: SudokuField;
   activeSpot: Indexes;
   highlightedNum: number | null;
+  board: SudokuField[][];
 }
 
-const Cell: FC<CellProps> = ({ cell, click, activeSpot, highlightedNum }) => {
+const Cell: FC<CellProps> = ({
+  cell,
+  click,
+  activeSpot,
+  highlightedNum,
+  board,
+}) => {
   const isHover =
     activeSpot.x === cell.pos.x ||
     activeSpot.y === cell.pos.y ||
@@ -21,6 +29,18 @@ const Cell: FC<CellProps> = ({ cell, click, activeSpot, highlightedNum }) => {
   const isBorderTop = cell.pos.x !== 0 && cell.pos.x % 3 === 0;
   const isBorderLeft = cell.pos.y !== 0 && cell.pos.y % 3 === 0;
 
+  const completedRow = board[cell.pos.x].every(
+    tile => tile.correct === tile.value
+  );
+
+  const completedCol = matrixArray(board)[cell.pos.y].every(
+    tile => tile.correct === tile.value
+  );
+
+  const completedSquare = squareBoard(board)[cell.pos.z].every(
+    tile => tile.correct === tile.value
+  );
+
   return (
     <S.Cell
       onClick={click}
@@ -31,6 +51,9 @@ const Cell: FC<CellProps> = ({ cell, click, activeSpot, highlightedNum }) => {
       isCurrentSpot={isCurrentSpot}
       isCorrect={cell.value === cell.correct}
       isHighlightedNum={cell.value === highlightedNum}
+      className={`${completedRow && "completedRow"} ${
+        completedCol && "completedCol"
+      } ${completedSquare && "completedSquare"} `}
     >
       {cell.value ? cell.value : ""}
     </S.Cell>
