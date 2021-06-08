@@ -14,6 +14,7 @@ import {
   removeValue,
   getHint,
 } from "./utils/play";
+import useTimmer from "./components/hooks/useTimmer";
 
 const initialBoard = [
   [4, 0, 2, 6, 3, 8, 1, 0, 0],
@@ -38,6 +39,8 @@ const App = () => {
   const [board, setBoard] = useState<SudokuField[][]>(initialSudoku);
   const [activeSpot, setActiveSpot] = useState<Indexes>(initialIndexes);
   const [highlightedNum, setHighlightedNum] = useState<null | Value>(null);
+  const { timeToDisplay, isCounting, restartCount, startCount, stopCount } =
+    useTimmer();
 
   const hint = useCallback(() => {
     setBoard(prev => getHint(prev, activeSpot));
@@ -64,6 +67,15 @@ const App = () => {
     [activeSpot]
   );
 
+  const newGame = () => {
+    // todo randomize new boards
+    const initialSudoku = getPlayableBoard(initialBoard, resolvedSudoku);
+    setBoard(initialSudoku);
+    setActiveSpot(initialIndexes);
+    setHighlightedNum(null);
+    restartCount();
+  };
+
   const handleKeydown = useCallback(
     (e: KeyboardEvent) => {
       const { key } = e;
@@ -85,7 +97,6 @@ const App = () => {
         }
 
         const value = parseInt(key, 10);
-
         typeNumber(value);
       } else if (e.key === "Backspace") {
         erase();
@@ -110,7 +121,12 @@ const App = () => {
   return (
     <div className='content'>
       <h2>Sudoku Game</h2>
-      <Stats />
+      <Stats
+        isCounting={isCounting}
+        startCount={startCount}
+        stopCount={stopCount}
+        time={timeToDisplay}
+      />
       <div className='game'>
         <div className='board'>
           {board.map((row, x) =>
@@ -121,13 +137,19 @@ const App = () => {
                 cell={cell}
                 activeSpot={activeSpot}
                 highlightedNum={highlightedNum}
+                board={board}
               >
                 {cell.value ? cell.value : ""}
               </Cell>
             ))
           )}
         </div>
-        <Controlers erase={erase} hint={hint} typeNumber={typeNumber} />
+        <Controlers
+          erase={erase}
+          hint={hint}
+          typeNumber={typeNumber}
+          newGame={newGame}
+        />
       </div>
       <Articles />
       <div className='footer'>footer here</div>
