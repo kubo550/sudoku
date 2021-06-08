@@ -11,8 +11,6 @@ interface CellProps {
 }
 
 export const Cell = styled.div<CellProps>`
-  width: 50px;
-  height: 50px;
   border: 1px inset black;
   border-top: ${({ borderTop }) => borderTop && "3px inset black"};
   border-left: ${({ borderLeft }) => borderLeft && "3px inset black"};
@@ -22,6 +20,15 @@ export const Cell = styled.div<CellProps>`
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 1.9rem;
   user-select: none;
+  width: 35px;
+  height: 35px;
+  font-size: 1.3rem;
+
+  @media (min-width: 620px) {
+    width: 50px;
+    height: 50px;
+    font-size: 1.9rem;
+  }
+
 `;

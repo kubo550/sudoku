@@ -23,7 +23,7 @@ code {
 .content {
   margin: 0 20px;
 
-  @media (min-width: 720px) {
+  @media (min-width: 780px) {
     margin: 0 10%;
     max-width: 1024px;
   }
@@ -34,7 +34,7 @@ code {
   flex-direction: column;
   justify-content: space-between;
 
-  @media (min-width: 720px) {
+  @media (min-width: 780px) {
     flex-direction: row;
   }
 }
@@ -42,11 +42,18 @@ code {
 .board {
   display: flex;
   flex-wrap: wrap;
-  width: 456px;
-  min-width: 456px;
-  height: 456px;
   border: 3px inset #000;
   margin: 0 auto;
+
+  width: 321px;
+  min-width: 321px;
+  height: 321px;
+
+  @media (min-width: 620px) {
+    width: 456px;
+    min-width: 456px;
+    height: 456px;
+  }
 }
 
 .cell.hover {
