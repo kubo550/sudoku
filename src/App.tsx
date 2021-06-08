@@ -39,6 +39,7 @@ const App = () => {
   const [board, setBoard] = useState<SudokuField[][]>(initialSudoku);
   const [activeSpot, setActiveSpot] = useState<Indexes>(initialIndexes);
   const [highlightedNum, setHighlightedNum] = useState<null | Value>(null);
+  const [completedNums, setCompletedNums] = useState<Value[]>([]);
   const { timeToDisplay, isCounting, restartCount, startCount, stopCount } =
     useTimmer();
 
@@ -54,17 +55,47 @@ const App = () => {
 
   const typeNumber = useCallback(
     (value: Value) => {
+      if (!isValidField(board, activeSpot)) {
+        return;
+      }
       setHighlightedNum(value);
 
-      setBoard(prev =>
-        prev.map((row, x) =>
-          row.map((cell, y) =>
-            isThisSpot(activeSpot, x, y) ? { ...cell, value } : cell
-          )
+      const newBoard = board.map((row, x) =>
+        row.map((cell, y) =>
+          isThisSpot(activeSpot, x, y) ? { ...cell, value } : cell
         )
       );
+      setBoard(newBoard);
+
+      const isAllOfNumber = (num: Value, board: SudokuField[][]) => {
+        let counter = 0;
+
+        [...board].forEach(row =>
+          row.forEach(cell => {
+            if (cell.value === num && cell.value === cell.correct) {
+              counter += 1;
+            }
+          })
+        );
+
+        return counter === 9;
+      };
+      const calculateCompletedNums = (board: SudokuField[][]): Value[] => {
+        const completedNumbers = [];
+
+        for (let i = 1; i < 10; i++) {
+          if (isAllOfNumber(i, board)) {
+            completedNumbers.push(i);
+          }
+        }
+
+        return completedNumbers;
+      };
+
+      const completedNumbers = calculateCompletedNums(newBoard);
+      setCompletedNums(completedNumbers);
     },
-    [activeSpot]
+    [activeSpot, board]
   );
 
   const newGame = () => {
@@ -92,11 +123,8 @@ const App = () => {
         setHighlightedNum(value ? value : null);
         setActiveSpot(newSpot);
       } else if (NUMBERS.includes(key)) {
-        if (!isValidField(board, activeSpot)) {
-          return;
-        }
-
         const value = parseInt(key, 10);
+
         typeNumber(value);
       } else if (e.key === "Backspace") {
         erase();
@@ -149,6 +177,7 @@ const App = () => {
           hint={hint}
           typeNumber={typeNumber}
           newGame={newGame}
+          completedNums={completedNums}
         />
       </div>
       <Articles />

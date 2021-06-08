@@ -1,4 +1,5 @@
 import { FC } from "react";
+import { Value } from "../../types";
 import * as S from "./Controlers.style";
 
 interface ControlersProps {
@@ -6,6 +7,7 @@ interface ControlersProps {
   hint: () => void;
   typeNumber: (value: number) => void;
   newGame: () => void;
+  completedNums: Value[];
 }
 
 const Controlers: FC<ControlersProps> = ({
@@ -13,8 +15,10 @@ const Controlers: FC<ControlersProps> = ({
   hint,
   typeNumber,
   newGame,
+  completedNums,
 }) => {
   const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
   return (
     <S.Wrapper>
       <button onClick={newGame}> NEW GAME </button>
@@ -28,11 +32,19 @@ const Controlers: FC<ControlersProps> = ({
         </div>
       </div>
       <div className='numbers'>
-        {numbers.map(num => (
-          <div key={num} onClick={() => typeNumber(num)}>
-            {num}
-          </div>
-        ))}
+        {numbers.map(num => {
+          const isHidden = completedNums.includes(num);
+
+          return (
+            <S.NumberBtn
+              key={num}
+              hidden={isHidden}
+              onClick={isHidden ? () => {} : () => typeNumber(num)}
+            >
+              {num}
+            </S.NumberBtn>
+          );
+        })}
       </div>
     </S.Wrapper>
   );
