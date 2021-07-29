@@ -13,4 +13,6 @@ Sudoku is one of the most popular puzzle games of all time. The goal of Sudoku i
 
 ## Preview 
 
+check out online on [gh-pages](https://kubo550.github.io/sudoku/)
+
 ![Preview](https://raw.githubusercontent.com/kubo550/sudoku/master/sudoku_preview.png)
