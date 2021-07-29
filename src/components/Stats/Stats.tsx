@@ -39,8 +39,7 @@ const Stats: FC<StatsProps> = ({ startCount, isCounting, stopCount, time }) => {
       </div>
 
       <div>
-        {time}
-        {isCounting && <button onClick={stopCount}> || </button>}
+        {time} {isCounting && <button onClick={stopCount}> || </button>}
         {!isCounting && <button onClick={startCount}> &gt; </button>}
       </div>
     </S.Wrapper>

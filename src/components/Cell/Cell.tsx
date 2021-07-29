@@ -9,6 +9,7 @@ interface CellProps {
   activeSpot: Indexes;
   highlightedNum: number | null;
   board: SudokuField[][];
+  isWin: boolean;
 }
 
 const Cell: FC<CellProps> = ({
@@ -17,6 +18,7 @@ const Cell: FC<CellProps> = ({
   activeSpot,
   highlightedNum,
   board,
+  isWin,
 }) => {
   const isHover =
     activeSpot.x === cell.pos.x ||
@@ -41,6 +43,10 @@ const Cell: FC<CellProps> = ({
     tile => tile.correct === tile.value
   );
 
+  const completedSudoku = isWin;
+
+  // todo Repair animation
+
   return (
     <S.Cell
       onClick={click}
@@ -51,9 +57,12 @@ const Cell: FC<CellProps> = ({
       isCurrentSpot={isCurrentSpot}
       isCorrect={cell.value === cell.correct}
       isHighlightedNum={cell.value === highlightedNum}
-      className={`${completedRow && "completedRow"} ${
-        completedCol && "completedCol"
-      } ${completedSquare && "completedSquare"} `}
+      className={`${completedRow ? "completedRow" : ""} ${
+        completedCol ? "completedCol" : ""
+      } ${completedSquare ? "completedSquare" : ""} ${
+        completedSudoku ? "completedSudoku" : ""
+      }
+      `}
     >
       {cell.value ? cell.value : ""}
     </S.Cell>

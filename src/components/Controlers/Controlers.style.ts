@@ -37,7 +37,7 @@ export const Wrapper = styled.div`
     justify-content: space-evenly;
 
     
-    @media (min-width: 720px) {
+    @media (min-width: 780px) {
       display: grid;
       grid-template: repeat(3, 1fr) / repeat(3, 1fr);
       gap: 5px;
@@ -64,7 +64,7 @@ export const NumberBtn = styled.div<NumberBtnProps>`
   font-weight: 400;
 
  
-  @media (min-width: 720px) {
+  @media (min-width: 780px) {
     background-color: #eaeef4;
     font-size: 3.4em;
     font-weight: 300;
@@ -86,4 +86,21 @@ export const NumberBtn = styled.div<NumberBtnProps>`
   }
 
 
+`
+export const NewGameBtn = styled.button`
+  height: 60px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    background-color: #0072e3;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 60px;
+    vertical-align: middle;
+    text-align: center;
+    color: #fff;
+    transition: all .2s ease-in-out;
+    cursor: pointer;
+    outline: none;
+    border: none
+    
 `

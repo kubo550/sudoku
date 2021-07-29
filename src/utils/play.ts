@@ -1,5 +1,5 @@
 import _ from "lodash"
-import { Arrow, Coords, Indexes, SudokuField } from "../types";
+import { Arrow, Coords, Indexes, SudokuField, Value } from "../types";
 import { calculateSquareIdx } from "./createSudoku";
 
 export const ARROWS: Arrow[] = ["ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown"];
@@ -54,3 +54,30 @@ export const getHint = (board: SudokuField[][], activeSpot: Indexes): SudokuFiel
 
     return newBoard
 }
+
+const isAllOfNumber = (num: Value, board: SudokuField[][]) => {
+    let counter = 0;
+
+    [...board].forEach(row =>
+        row.forEach(cell => {
+            if (cell.value === num && cell.value === cell.correct) {
+                counter += 1;
+            }
+        })
+    );
+
+    return counter === 9;
+};
+export const calculateCompletedNums = (board: SudokuField[][]): Value[] => {
+    const completedNumbers = [];
+
+    for (let i = 1; i < 10; i++) {
+        if (isAllOfNumber(i, board)) {
+            completedNumbers.push(i);
+        }
+    }
+
+    return completedNumbers;
+};
+
+export const isWin = (board: SudokuField[][]) => board.every(row => row.every(cell => cell.value === cell.correct))

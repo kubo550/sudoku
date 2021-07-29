@@ -1,4 +1,5 @@
 {
+  "homepage": "https://kubo550.github.io/sudoku",
   "name": "sudoku",
   "version": "0.1.0",
   "private": true,
@@ -45,6 +46,7 @@
   },
   "devDependencies": {
     "@types/styled-components": "^5.1.9",
+    "gh-pages": "^3.2.3",
     "sass": "^1.34.1"
   }
 }

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { Arrow, Indexes, SudokuField, Value } from "./types";
-import { Articles, Cell, Controlers, Stats } from "./components";
+import { Articles, Cell, Controlers, Footer, Stats } from "./components";
 
 import { resolvingSudoku, getPlayableBoard } from "./utils/createSudoku";
 import {
@@ -13,8 +13,10 @@ import {
   isCorrectCoords,
   removeValue,
   getHint,
+  calculateCompletedNums,
+  isWin,
 } from "./utils/play";
-import useTimmer from "./components/hooks/useTimmer";
+import useTimmer from "./hooks/useTimmer";
 
 const initialBoard = [
   [4, 0, 2, 6, 3, 8, 1, 0, 0],
@@ -40,20 +42,25 @@ const App = () => {
   const [activeSpot, setActiveSpot] = useState<Indexes>(initialIndexes);
   const [highlightedNum, setHighlightedNum] = useState<null | Value>(null);
   const [completedNums, setCompletedNums] = useState<Value[]>([]);
+  const [isGameOver, setisGameOver] = useState(false);
   const { timeToDisplay, isCounting, restartCount, startCount, stopCount } =
     useTimmer();
 
   const hint = useCallback(() => {
-    setBoard(prev => getHint(prev, activeSpot));
+    const newBoard = getHint(board, activeSpot);
+    setBoard(newBoard);
+    const win = isWin(newBoard);
+    win && stopCount();
+    setisGameOver(win);
     setHighlightedNum(board[activeSpot.x][activeSpot.y].correct);
-  }, [activeSpot, board]);
+  }, [activeSpot, board, stopCount]);
 
   const erase = useCallback(() => {
     setBoard(prev => removeValue(prev, activeSpot));
     setHighlightedNum(null);
   }, [activeSpot]);
 
-  const typeNumber = useCallback(
+  const enterNumber = useCallback(
     (value: Value) => {
       if (!isValidField(board, activeSpot)) {
         return;
@@ -67,35 +74,15 @@ const App = () => {
       );
       setBoard(newBoard);
 
-      const isAllOfNumber = (num: Value, board: SudokuField[][]) => {
-        let counter = 0;
-
-        [...board].forEach(row =>
-          row.forEach(cell => {
-            if (cell.value === num && cell.value === cell.correct) {
-              counter += 1;
-            }
-          })
-        );
-
-        return counter === 9;
-      };
-      const calculateCompletedNums = (board: SudokuField[][]): Value[] => {
-        const completedNumbers = [];
-
-        for (let i = 1; i < 10; i++) {
-          if (isAllOfNumber(i, board)) {
-            completedNumbers.push(i);
-          }
-        }
-
-        return completedNumbers;
-      };
-
       const completedNumbers = calculateCompletedNums(newBoard);
       setCompletedNums(completedNumbers);
+
+      const win = isWin(newBoard);
+      setisGameOver(win);
+      win && stopCount();
     },
-    [activeSpot, board]
+
+    [activeSpot, board, stopCount]
   );
 
   const newGame = () => {
@@ -105,6 +92,7 @@ const App = () => {
     setActiveSpot(initialIndexes);
     setHighlightedNum(null);
     restartCount();
+    setisGameOver(false);
   };
 
   const handleKeydown = useCallback(
@@ -123,16 +111,14 @@ const App = () => {
         setHighlightedNum(value ? value : null);
         setActiveSpot(newSpot);
       } else if (NUMBERS.includes(key)) {
-        const value = parseInt(key, 10);
-
-        typeNumber(value);
+        enterNumber(+key);
       } else if (e.key === "Backspace") {
         erase();
       } else if (e.key === "h") {
         hint();
       }
     },
-    [activeSpot, board, erase, hint, typeNumber]
+    [activeSpot, board, erase, hint, enterNumber]
   );
 
   useEffect(() => {
@@ -147,41 +133,45 @@ const App = () => {
   };
 
   return (
-    <div className='content'>
-      <h2>Sudoku Game</h2>
-      <Stats
-        isCounting={isCounting}
-        startCount={startCount}
-        stopCount={stopCount}
-        time={timeToDisplay}
-      />
-      <div className='game'>
-        <div className='board'>
-          {board.map((row, x) =>
-            row.map((cell, y) => (
-              <Cell
-                key={`${x}${y}`}
-                click={() => handleClick(cell)}
-                cell={cell}
-                activeSpot={activeSpot}
-                highlightedNum={highlightedNum}
-                board={board}
-              >
-                {cell.value ? cell.value : ""}
-              </Cell>
-            ))
-          )}
-        </div>
-        <Controlers
-          erase={erase}
-          hint={hint}
-          typeNumber={typeNumber}
-          newGame={newGame}
-          completedNums={completedNums}
+    <div>
+      <div className='content'>
+        <h2>Sudoku Game</h2>
+        <Stats
+          isCounting={isCounting}
+          startCount={startCount}
+          stopCount={stopCount}
+          time={timeToDisplay}
         />
+        <div className='game'>
+          <div className='board'>
+            {board.map((row, x) =>
+              row.map((cell, y) => (
+                <Cell
+                  key={`${x}${y}`}
+                  click={() => handleClick(cell)}
+                  cell={cell}
+                  activeSpot={activeSpot}
+                  highlightedNum={highlightedNum}
+                  board={board}
+                  isWin={isGameOver}
+                >
+                  {cell.value ? cell.value : ""}
+                </Cell>
+              ))
+            )}
+          </div>
+          <Controlers
+            erase={erase}
+            hint={hint}
+            typeNumber={enterNumber}
+            newGame={newGame}
+            completedNums={completedNums}
+            isWin={isGameOver}
+          />
+        </div>
+        <Articles />
       </div>
-      <Articles />
-      <div className='footer'>footer here</div>
+      <Footer />
     </div>
   );
 };

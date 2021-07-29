@@ -13,6 +13,7 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  overflow-x: hidden;
 }
 
 code {
@@ -24,7 +25,7 @@ code {
   margin: 0 20px;
 
   @media (min-width: 780px) {
-    margin: 0 10%;
+    margin: 0 auto;
     max-width: 1024px;
   }
 }
@@ -67,13 +68,14 @@ code {
   border-left: 3px inset black;
 }
 
+.completedSquare,
 .completedRow,
 .completedCol,
-.completedSquare {
-  animation: completedRow 1s ease alternate;
+.completedSudoku {
+  animation: completed 1s ease alternate;
 }
 
-@keyframes completedRow {
+@keyframes completed {
   0% {
     background-color: rgba(0, 223, 0, 0.534);
   }
